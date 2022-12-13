@@ -1,0 +1,30 @@
+{
+  "name": "boilerplate",
+  "source": "src/index.html",
+  "browserslist": [
+    "> 0.5%, last 2 versions, not dead"
+  ],
+  "scripts": {
+    "dev": "parcel",
+    "build": "parcel build",
+    "analyze": "parcel build --reporter @parcel/reporter-bundle-analyzer"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.14",
+    "@types/three": "^0.146.0",
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "eslint": "^8.22.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "parcel": "^2.8.1",
+    "prettier": "^2.8.1",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "three": "^0.147.0"
+  }
+}
