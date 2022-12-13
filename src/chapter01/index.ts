@@ -17,11 +17,11 @@ class App {
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.container.appendChild(this.renderer.domElement);
 
-    this.setupDirectionalLight();
-    this.box = this.setupBoxMesh();
+    this.setupLight();
+    this.box = this.setupModel();
 
-    window.onresize = this.handleResize;
-    this.handleResize();
+    window.onresize = this.resize;
+    this.resize();
 
     requestAnimationFrame(this.render);
   }
@@ -39,7 +39,7 @@ class App {
     return camera;
   };
 
-  private readonly setupDirectionalLight = (): void => {
+  private readonly setupLight = (): void => {
     const color = 0xffffff;
     const intensity = 1;
     const light = new THREE.DirectionalLight(color, intensity);
@@ -47,7 +47,7 @@ class App {
     this.scene.add(light);
   };
 
-  private readonly setupBoxMesh = (): Mesh => {
+  private readonly setupModel = (): Mesh => {
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
     const boxMaterial = new THREE.MeshPhongMaterial({ color: 0x44a88 });
     const box = new THREE.Mesh(boxGeometry, boxMaterial);
@@ -56,7 +56,7 @@ class App {
     return box;
   };
 
-  private readonly handleResize = (): void => {
+  private readonly resize = (): void => {
     const { clientWidth, clientHeight } = this.container;
     this.camera.aspect = clientWidth / clientHeight;
     this.camera.updateProjectionMatrix();
@@ -78,5 +78,5 @@ class App {
 
 window.onload = () => {
   const container = document.getElementById('webgl-container') as HTMLDivElement;
-  const app = new App(container);
+  new App(container);
 };

@@ -16,6 +16,7 @@
     "sourceType": "module"
   },
   "rules": {
-    "@typescript-eslint/no-non-null-assertion": "off"                                  // non-null 단언 연산자(!) 사용
+    "@typescript-eslint/no-non-null-assertion": "off",                                  // non-null 단언 연산자(!) 사용
+    "no-new": "off"
   }
 }
