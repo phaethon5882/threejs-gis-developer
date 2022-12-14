@@ -3,10 +3,10 @@
   "source": [
     "src/chapter01/index.html",
     "src/chapter02/index.html",
-    "src/chapter03/index.html",
-    "src/chapter03/extrude-geometry.html",
+    "src/chapter03/part1.html",
+    "src/chapter03/part3.html",
     "src/chapter04/index.html",
-    "src/chapter05/index.html"
+    "src/chapter05/part1.html"
   ],
   "browserslist": [
     "> 0.5%, last 2 versions, not dead"
