@@ -1,6 +1,6 @@
 {
   "name": "boilerplate",
-  "source": ["src/chapter01/index.html", "src/chapter02/index.html", "src/chapter03/index.html"],
+  "source": ["src/chapter01/index.html", "src/chapter02/index.html", "src/chapter03/index.html", "src/chapter04/index.html"],
   "browserslist": [
     "> 0.5%, last 2 versions, not dead"
   ],
