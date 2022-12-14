@@ -40,8 +40,7 @@ class App {
     const far = 100;
 
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 0, 20);
-
+    camera.position.set(0, 0, 40);
     return camera;
   };
 
@@ -55,15 +54,15 @@ class App {
 
   private readonly setupModel = (): Group => {
     const fontLoader = new FontLoader();
-    const textGeometry = new TextGeometry('Yunki', {
+    const textGeometry = new TextGeometry('Y u n k i', {
       font: fontLoader.parse(fontJson),
-      size: 5,
+      size: 9,
       height: 1.5,
-      curveSegments: 4,
+      curveSegments: 5,
       bevelEnabled: true,
-      bevelThickness: 0.7,
-      bevelSize: 0.7,
-      bevelSegments: 2,
+      bevelThickness: 1.5,
+      bevelSize: 1,
+      bevelSegments: 6,
     });
 
     const textMaterial = new THREE.MeshPhongMaterial({ color: 0x515151 });
