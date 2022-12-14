@@ -51,16 +51,16 @@ class App {
   };
 
   private readonly setupModel = (): Group => {
-    const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
-    const boxMaterial = new THREE.MeshPhongMaterial({ color: 0x515151 });
-    const box = new THREE.Mesh(boxGeometry, boxMaterial);
+    const circleGeometry = new THREE.CircleGeometry(1, 16, Math.PI / 2, Math.PI);
+    const circleMaterial = new THREE.MeshPhongMaterial({ color: 0x515151 });
+    const circle = new THREE.Mesh(circleGeometry, circleMaterial);
 
-    const wireframeGeometry = new THREE.WireframeGeometry(boxGeometry);
+    const wireframeGeometry = new THREE.WireframeGeometry(circleGeometry);
     const wireframeMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 });
     const wireframe = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
 
     const group = new THREE.Group();
-    group.add(box);
+    group.add(circle);
     group.add(wireframe);
     this.scene.add(group);
 
