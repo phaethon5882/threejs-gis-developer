@@ -1,9 +1,7 @@
 import type { Material, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper';
 import { debounce } from 'lodash-es';
-import path from 'path';
 
 class App {
   private readonly container: HTMLDivElement;
@@ -44,49 +42,66 @@ class App {
   };
 
   private readonly setupLight = (): void => {
+    // ambient light for aoMap: 주변광, 모든 매쉬의 전체면에 균일하게 비추는 빛, 위치랑 방향성 없이 색깔만 존재, 음영 안 생김
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+    this.scene.add(ambientLight);
+
+    // directional light: 방향광, 멀리있는 광원 모사, 거리와 상관없이 균일한 빛을 비춘다.
     const color = 0xffffff;
     const intensity = 1;
     const light = new THREE.DirectionalLight(color, intensity);
     light.position.set(4, 4, 4);
-    // this.scene.add(light);
-    this.camera.add(light); // 카메라 움직일 때 광원도 움직이기
+    this.scene.add(light);
+    this.camera.add(light); // 카메라 움직일 때 직선 광원도 움직이기
   };
 
   private readonly setupModels = (): void => {
     const textureLoader = new THREE.TextureLoader();
     const map = textureLoader.load('/static/images/Glass_Window_002_basecolor.jpg');
-    const aoMap = textureLoader.load('/static/images/Glass_Window_002_ambientOcclusion.jpg');
-    const displacementMap = textureLoader.load('/static/images/Glass_Window_002_height.png');
-    const normalMap = textureLoader.load('/static/images/Glass_Window_002_normal.jpg');
+    const normalMap = textureLoader.load('/static/images/Glass_Window_002_normal.jpg'); // 법선벡터는 버텍스마다 생긴다. 노멀맵은 rgb 값으로 맵핑한것임
+    const displacementMap = textureLoader.load('/static/images/Glass_Window_002_height.png'); // 세그먼트를 나눠야해서 적절히 써야함
+    const aoMap = textureLoader.load('/static/images/Glass_Window_002_ambientOcclusion.jpg'); // ambient light 필요
     const roughnessMap = textureLoader.load('/static/images/Glass_Window_002_roughness.jpg');
     const metalnessMap = textureLoader.load('/static/images/Glass_Window_002_metallic.jpg');
     const alphaMap = textureLoader.load('/static/images/Glass_Window_002_opacity.jpg');
+    const lightMap = textureLoader.load('/static/images/light2.jpeg');
 
     const material = new THREE.MeshStandardMaterial({
-      // map,
-      // aoMap,
-      // displacementMap,
+      map,
+
       normalMap,
-      // roughnessMap,
-      // metalnessMap,
+
+      displacementMap,
+      displacementScale: 0.2,
+      displacementBias: -0.15,
+
+      aoMap,
+      aoMapIntensity: 1,
+
+      roughnessMap,
+      roughness: 0.5,
+
+      metalnessMap,
+      metalness: 0.5,
+
       // alphaMap,
+      transparent: true,
+      side: THREE.DoubleSide,
+
+      lightMap,
+      lightMapIntensity: 2,
     });
 
-    const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 256, 256, 256);
     const box = new THREE.Mesh(boxGeometry, material);
     box.position.set(-1, 0, 0);
+    box.geometry.attributes.uv2 = box.geometry.attributes.uv;
     this.scene.add(box);
 
-    const boxNormals = new VertexNormalsHelper(box, 0.1, 0xffff00);
-    this.scene.add(boxNormals);
-
-    const sphereGeometry = new THREE.SphereGeometry(0.7, 32, 32);
+    const sphereGeometry = new THREE.SphereGeometry(0.7, 512, 512);
     const sphere = new THREE.Mesh(sphereGeometry, material);
     sphere.position.set(1, 0, 0);
-
-    const sphereNormals = new VertexNormalsHelper(sphere, 0.1, 0xffff00);
-    this.scene.add(sphereNormals);
-
+    sphere.geometry.attributes.uv2 = sphere.geometry.attributes.uv;
     this.scene.add(sphere);
   };
 
