@@ -10,6 +10,7 @@
     "analyze": "npm run entry && parcel build --reporter @parcel/reporter-bundle-analyzer"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.6",
     "@types/node": "^18.11.14",
     "@types/three": "^0.146.0",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
@@ -27,16 +28,28 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
+    "lodash-es": "^4.17.21",
     "three": "^0.147.0"
   },
   "source": [
     "./src/chapter01/index.html",
     "./src/chapter02/index.html",
-    "./src/chapter05/part1/index.html",
     "./src/chapter04/index.html",
     "./src/chapter05/part2/index.html",
-    "./src/static/images/disc.png",
+    "./src/chapter05/part1/index.html",
+    "./src/chapter05/part3/index.html",
+    "./src/chapter05/part4/index.html",
     "./src/chapter03/part1/index.html",
-    "./src/chapter03/part3/index.html"
+    "./src/chapter03/part3/index.html",
+    "./src/static/images/Glass_Window_002_ambientOcclusion.jpg",
+    "./src/static/images/Glass_Window_002_basecolor.jpg",
+    "./src/static/images/Glass_Window_002_height.png",
+    "./src/static/images/Glass_Window_002_metallic.jpg",
+    "./src/static/images/Glass_Window_002_normal.jpg",
+    "./src/static/images/Glass_Window_002_opacity.jpg",
+    "./src/static/images/Glass_Window_002_roughness.jpg",
+    "./src/static/images/Material_1588.jpg",
+    "./src/static/images/disc.png",
+    "./src/static/images/uv_grid_opengl.jpg"
   ]
 }

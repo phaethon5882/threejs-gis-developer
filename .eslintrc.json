@@ -16,7 +16,30 @@
     "sourceType": "module"
   },
   "rules": {
+    "@typescript-eslint/consistent-type-imports": "error",                              // interface 와 type 임포트는 import type 으로 가져오기
     "@typescript-eslint/no-non-null-assertion": "off",                                  // non-null 단언 연산자(!) 사용
-    "no-new": "off"
+    "no-new": "off",
+    "import/order": [
+      "error",
+      {
+        "groups": ["type", "builtin", "external", "internal", "parent", "sibling", "index", "unknown"],
+        "pathGroups": [
+          {
+            "pattern": "{three,three/**}",
+            "group": "builtin",
+            "position": "before"
+          },
+          {
+            "pattern": "lodash-es",
+            "group": "builtin",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["three", "lodash-es"],
+        "alphabetize": { "order": "asc", "caseInsensitive": true },
+        "newlines-between": "never",
+        "warnOnUnassignedImports": true
+      }
+    ]
   }
 }

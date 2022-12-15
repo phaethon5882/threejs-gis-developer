@@ -6,7 +6,7 @@ const sourceDir = path.join(__dirname, 'src');
 const pkgJsonDir = path.join(__dirname, 'package.json');
 
 (async function addSourceToPackageJson() {
-  const entryPaths = await fg(`${sourceDir}/**/*.{html,png}`);
+  const entryPaths = await fg(`${sourceDir}/**/*.{html,png,jpg,jpeg}`);
   const relativePaths = entryPaths.map((absPath) => `.${absPath.replace(process.cwd(), '')}`);
 
   const pkgRaw = await readFile(pkgJsonDir, 'utf-8');
