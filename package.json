@@ -1,20 +1,13 @@
 {
   "name": "boilerplate",
-  "source": [
-    "src/chapter01/index.html",
-    "src/chapter02/index.html",
-    "src/chapter03/part1.html",
-    "src/chapter03/part3.html",
-    "src/chapter04/index.html",
-    "src/chapter05/part1.html"
-  ],
   "browserslist": [
     "> 0.5%, last 2 versions, not dead"
   ],
   "scripts": {
-    "dev": "parcel",
-    "build": "parcel build",
-    "analyze": "parcel build --reporter @parcel/reporter-bundle-analyzer"
+    "entry": "ts-node entry.ts",
+    "dev": "npm run entry && parcel",
+    "build": "npm run entry && parcel build",
+    "analyze": "npm run entry && parcel build --reporter @parcel/reporter-bundle-analyzer"
   },
   "devDependencies": {
     "@types/node": "^18.11.14",
@@ -27,11 +20,23 @@
     "eslint-plugin-n": "^15.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.1.1",
+    "fast-glob": "^3.2.12",
     "parcel": "^2.8.1",
     "prettier": "^2.8.1",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
   },
   "dependencies": {
     "three": "^0.147.0"
-  }
+  },
+  "source": [
+    "./src/chapter01/index.html",
+    "./src/chapter02/index.html",
+    "./src/chapter05/part1/index.html",
+    "./src/chapter04/index.html",
+    "./src/chapter05/part2/index.html",
+    "./src/static/images/disc.png",
+    "./src/chapter03/part1/index.html",
+    "./src/chapter03/part3/index.html"
+  ]
 }

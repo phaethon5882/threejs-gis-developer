@@ -1,16 +1,12 @@
 import * as THREE from 'three';
-import { Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-
-type ModelName = 'solarSystem' | 'earthOrbit' | 'moonOrbit';
-type ModelMap = Record<ModelName, Object3D>;
 
 class App {
   private readonly container: HTMLDivElement;
   private readonly renderer: WebGLRenderer;
   private readonly scene: Scene;
   private readonly camera: PerspectiveCamera;
-  private readonly models: ModelMap;
 
   constructor(container: HTMLDivElement) {
     this.container = container;
@@ -22,7 +18,7 @@ class App {
     this.container.appendChild(this.renderer.domElement);
 
     this.setupLight();
-    this.models = this.setupModels();
+    this.setupModels();
 
     this.setupControls();
 
@@ -53,54 +49,29 @@ class App {
     this.scene.add(light);
   };
 
-  private readonly setupModels = (): ModelMap => {
-    const solarSystem = new THREE.Object3D();
-    this.scene.add(solarSystem);
+  private readonly setupModels = (): void => {
+    const vertices = [];
+    for (let i = 0; i < 10_000; i++) {
+      const x = THREE.MathUtils.randFloatSpread(5); // -2.5 ~ 2.5;
+      const y = THREE.MathUtils.randFloatSpread(5);
+      const z = THREE.MathUtils.randFloatSpread(5);
+      vertices.push(x, y, z);
+    }
 
-    // 공용 구 geometry
-    const sphereGeometry = new THREE.SphereGeometry(1, 12, 12);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
-    // 태양 추가
-    const sunMaterial = new THREE.MeshPhongMaterial({
-      emissive: 0xffff00,
-      flatShading: true,
+    const textureLoader = new THREE.TextureLoader();
+    const material = new THREE.PointsMaterial({
+      map: textureLoader.load('/static/images/disc.png'),
+      alphaTest: 0.5, // 픽셀의 alpha 값이 0.5보다 크면 렌더링
+      color: 0x00ffff,
+      size: 0.1,
+      sizeAttenuation: true, // 카메라에서 멀어질 수록 사이즈를 작게 랜더링
     });
-    const sunMesh = new THREE.Mesh(sphereGeometry, sunMaterial);
-    sunMesh.scale.set(3, 3, 3);
-    solarSystem.add(sunMesh);
 
-    // 지구 추가
-    const earthMaterial = new THREE.MeshPhongMaterial({
-      color: 0x2233ff,
-      emissive: 0x112244,
-      flatShading: true,
-    });
-    const earthMesh = new THREE.Mesh(sphereGeometry, earthMaterial);
-    const earthOrbit = new THREE.Object3D();
-    earthOrbit.position.set(10, 0, 0);
-    earthOrbit.add(earthMesh);
-    solarSystem.add(earthOrbit);
-
-    // 달 추가
-    const moonMaterial = new THREE.MeshPhongMaterial({
-      color: 0x888888,
-      emissive: 0x222222,
-      flatShading: true,
-    });
-    const moonMesh = new THREE.Mesh(sphereGeometry, moonMaterial);
-    moonMesh.scale.set(0.5, 0.5, 0.5);
-
-    // 지구 관점에서 x 축으로 2만큼 떨어지게 배치
-    const moonOrbit = new THREE.Object3D();
-    moonOrbit.add(moonMesh);
-    moonOrbit.position.set(2, 0, 0);
-    earthOrbit.add(moonOrbit);
-
-    return {
-      solarSystem,
-      earthOrbit,
-      moonOrbit,
-    };
+    const points = new THREE.Points(geometry, material);
+    this.scene.add(points);
   };
 
   private readonly setupControls = (): void => {
@@ -123,10 +94,10 @@ class App {
 
   private readonly update = (time: DOMHighResTimeStamp): void => {
     const seconds = time * 0.001;
-    const { solarSystem, earthOrbit, moonOrbit } = this.models;
-    solarSystem.rotation.set(0, seconds * 0.5, 0);
-    earthOrbit.rotation.set(0, seconds * 2, 0);
-    moonOrbit.rotation.set(0, seconds * 0.005, 0);
+    // const { solarSystem, earthOrbit, moonOrbit } = this.models;
+    // solarSystem.rotation.set(0, seconds * 0.5, 0);
+    // earthOrbit.rotation.set(0, seconds * 2, 0);
+    // moonOrbit.rotation.set(0, seconds * 0.005, 0);
   };
 }
 
