@@ -95,7 +95,7 @@ class App {
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 256, 256, 256);
     const box = new THREE.Mesh(boxGeometry, material);
     box.position.set(-1, 0, 0);
-    box.geometry.attributes.uv2 = box.geometry.attributes.uv;
+    box.geometry.attributes.uv2 = box.geometry.attributes.uv; // 요걸 해줘야 라이트맵이 동작함
     this.scene.add(box);
 
     const sphereGeometry = new THREE.SphereGeometry(0.7, 512, 512);
