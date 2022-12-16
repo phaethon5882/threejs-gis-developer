@@ -22,6 +22,7 @@ class App {
     this.camera = this.setupCamera();
 
     this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.shadowMap.enabled = true;
     this.container.appendChild(this.renderer.domElement);
 
     const { light, helper } = this.setupLightAndHelper();
@@ -52,39 +53,33 @@ class App {
   };
 
   private readonly setupLightAndHelper = () => {
-    /**
-     * AmbientLight: 는 환경광 또는 주변광으로 불리는데. 모든 면을 고르게 비추는 광원이다. 음영이 생기지 않는다.
-     * 주로 빛이 닿지 않는 물체도 보이게 하고 싶을 때 쓰고 아주 약하게 준다.
-     */
-    // const light = new THREE.AmbientLight(0xff0000, 0.2);
-    /**
-     * HemisphereLight: 마찬가지로 주변광이어서 음영이 안 생기는데. 하늘에서 내리 쬐는 색과 바닥의 반사광을 나타내준다.
-     */
-    // const light = new THREE.HemisphereLight('#b0d8f5', '#bb7a1c', 1);
-    /**
-     * DirectionalLight: 빛의 물체간의 거리에 상관없이 동일한 태양광같은 빛을 비춘다.
-     */
-    // const light = new THREE.DirectionalLight('#ffffff', 1);
-    // light.position.set(0, 5, 0);
-    // light.target.position.set(0, 0, 0);
-    // this.scene.add(light.target);
-    // this.scene.add(light);
-    //
-    // const helper = new THREE.DirectionalLightHelper(light);
-    // this.scene.add(helper);
-    /**
-     * RectAreaLight: 형광등이나 창문으로 세어나오는 빛을 표현하기 위해 쓰인다.
-     * 쓰기 위해선 RectAreaLightUniformsLib.init() 호출 필수
-     */
-    RectAreaLightUniformsLib.init();
+    // 보조광을 둬서 좀 더 밝게 만듦
+    const auxLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    auxLight.position.set(0, 5, 0);
+    auxLight.target.position.set(0, 0, 0);
+    this.scene.add(auxLight.target);
+    this.scene.add(auxLight);
 
-    const light = new THREE.RectAreaLight('#ffffff', 10, 6, 1);
+    const light = new THREE.DirectionalLight('#ffffff', 1);
     light.position.set(0, 5, 0);
-    light.rotation.x = THREE.MathUtils.degToRad(-90);
-
-    const helper = new RectAreaLightHelper(light);
-    light.add(helper);
+    light.target.position.set(0, 0, 0);
+    light.castShadow = true;
+    this.scene.add(light.target);
     this.scene.add(light);
+
+    // 그림자 잘리는 거 방지하려고 광원의 절두체를 키운다. ( 광원의 절두체는 OrthographicCamera 를 씀 )
+    light.shadow.camera.top = light.shadow.camera.right = 6;
+    light.shadow.camera.bottom = light.shadow.camera.left = -6;
+    // 그림자 품질을 높이려면 쉐도우맵 해상도를 높이면 된다.
+    light.shadow.mapSize.set(2048, 2048); // 기본값은 512x512
+    // 그림자의 가장자리를 블러처리하는 용도: 기본값 1, 클수록 블러링된다.
+    light.shadow.radius = 1;
+
+    const helper = new THREE.DirectionalLightHelper(light);
+    this.scene.add(helper);
+
+    const lightCameraHelper = new THREE.CameraHelper(light.shadow.camera);
+    this.scene.add(lightCameraHelper);
 
     return {
       light,
@@ -104,10 +99,11 @@ class App {
 
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = THREE.MathUtils.degToRad(-90); // 평면을 바닥으로 눞히겠다
+    ground.receiveShadow = true;
     this.scene.add(ground);
 
     // 가운데 흰색 반구
-    const bigSphereGeometry = new THREE.SphereGeometry(1.5, 64, 64, 0, Math.PI); // 반구
+    const bigSphereGeometry = new THREE.TorusKnotGeometry(1, 0.3, 128, 64, 2, 3); // 반구
     const bigSphereMaterial = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       roughness: 0.1,
@@ -115,7 +111,9 @@ class App {
     });
 
     const bigSphere = new THREE.Mesh(bigSphereGeometry, bigSphereMaterial);
-    bigSphere.rotation.x = THREE.MathUtils.degToRad(-90);
+    bigSphere.position.y = 1.6;
+    bigSphere.receiveShadow = true;
+    bigSphere.castShadow = true;
     this.scene.add(bigSphere);
 
     // 원 둘레에 있는 8개의 토러스들
@@ -131,6 +129,8 @@ class App {
       const torus = new THREE.Mesh(torusGeometry, torusMaterial);
       torusPivot.rotation.y = THREE.MathUtils.degToRad(45 * i);
       torus.position.set(3, 0.5, 0);
+      torus.receiveShadow = true;
+      torus.castShadow = true;
       torusPivot.add(torus);
       this.scene.add(torusPivot);
     }
@@ -147,6 +147,8 @@ class App {
     smallSpherePivot.add(smallSphere);
     smallSpherePivot.name = SMALL_SPHERE_PIVOT; // 이름을 부여해두면 scene.getObjectByName() 으로 언제든지 조회가능
     smallSphere.position.set(3, 0.5, 0);
+    smallSphere.receiveShadow = true;
+    smallSphere.castShadow = true;
     this.scene.add(smallSpherePivot);
   };
 
