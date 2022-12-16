@@ -51,8 +51,7 @@ class App {
     const video = document.createElement('video');
     const constraints: MediaStreamConstraints = {
       video: {
-        width: 1280,
-        height: 720,
+        aspectRatio: this.camera.aspect,
       },
     };
 
