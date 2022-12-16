@@ -41,7 +41,7 @@ class App {
 
   setupModel = async (): Promise<void> => {
     const map = await this.getVideoTexture();
-    const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
     const boxMaterial = new THREE.MeshPhongMaterial({ map });
     const box = new THREE.Mesh(boxGeometry, boxMaterial);
     this.scene.add(box);
@@ -59,7 +59,12 @@ class App {
     if (navigator.mediaDevices?.getUserMedia) {
       video.srcObject = await navigator.mediaDevices.getUserMedia(constraints);
       await video.play();
-      return new THREE.VideoTexture(video);
+      const videoTexture = new THREE.VideoTexture(video);
+      videoTexture.repeat.set(2, 2);
+      videoTexture.wrapS = THREE.MirroredRepeatWrapping;
+      videoTexture.wrapT = THREE.MirroredRepeatWrapping;
+
+      return videoTexture;
     } else {
       throw new Error('MediaDevices 인터페이스 사용 불가');
     }
