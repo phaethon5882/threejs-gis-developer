@@ -19,6 +19,8 @@
     "@typescript-eslint/consistent-type-imports": "error",                              // interface 와 type 임포트는 import type 으로 가져오기
     "@typescript-eslint/no-non-null-assertion": "off",                                  // non-null 단언 연산자(!) 사용
     "@typescript-eslint/explicit-function-return-type": "off",                          // 함수 반환타입 명시 끔
+    "@typescript-eslint/strict-boolean-expressions": "off",                             // if 문에서 엄격한 null 체크 끔
+    "no-extra-boolean-cast": "off",                                                     // Boolean() 사용가능
     "no-new": "off",
     "import/order": [
       "error",
