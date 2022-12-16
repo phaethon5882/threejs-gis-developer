@@ -1,9 +1,20 @@
+/**
+ * 그림자를 활성화 하기 위해서 3가지 설정이 필요함
+ * 1. 렌더러: renderer.shadowMap.enabled = true;
+ * 2. 광원: 그림자를 만드는 광원을 고르고 ( Directional, Point, SpotLight 만 가능 ) light.castShadow = true;
+ * 3. 모델: object3D.receiveShadow, object3D.castShadow 를 true 로 해줘야함. 각각 그림자를 받을건지 그림자를 발생시킬건지를 나타탬
+ */
 import type { PerspectiveCamera, Scene, WebGLRenderer, Object3D } from 'three';
-import { DirectionalLight, DirectionalLightHelper } from 'three';
+import {
+  DirectionalLight,
+  DirectionalLightHelper,
+  PointLight,
+  PointLightHelper,
+  SpotLight,
+  SpotLightHelper,
+} from 'three';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper';
-import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib';
 
 const SMALL_SPHERE_PIVOT = 'smallSpherePivot';
 
@@ -60,22 +71,42 @@ class App {
     this.scene.add(auxLight.target);
     this.scene.add(auxLight);
 
-    const light = new THREE.DirectionalLight('#ffffff', 1);
+    // 방향조명
+    // const light = new THREE.DirectionalLight('#ffffff', 1);
+    // light.target.position.set(0, 0, 0);
+    // this.scene.add(light.target);
+    // this.scene.add(light);
+    // 방향조명의 카메라 절두체 크기 변경
+    // 그림자 잘리는 거 방지하려고 광원의 절두체를 키운다. ( 광원의 절두체는 OrthographicCamera 를 씀 )
+    // light.shadow.camera.top = light.shadow.camera.right = 6;
+    // light.shadow.camera.bottom = light.shadow.camera.left = -6;
+    // const helper = new THREE.DirectionalLightHelper(light);
+    // this.scene.add(helper);
+
+    // 점광원
+    // const light = new THREE.PointLight(0xffffff, 0.7);
+    // light.position.set(0, 5, 0);
+    // this.scene.add(light);
+    // const helper = new THREE.PointLightHelper(light);
+    // this.scene.add(helper);
+
+    // 집중조명
+    const light = new THREE.SpotLight(0xffffff, 1);
     light.position.set(0, 5, 0);
     light.target.position.set(0, 0, 0);
-    light.castShadow = true;
+    light.angle = THREE.MathUtils.degToRad(30); // fovy 값같은거라고 보면됨 클 수록 빛이 넓게 퍼짐
+    light.penumbra = 0.2;
     this.scene.add(light.target);
     this.scene.add(light);
 
-    // 그림자 잘리는 거 방지하려고 광원의 절두체를 키운다. ( 광원의 절두체는 OrthographicCamera 를 씀 )
-    light.shadow.camera.top = light.shadow.camera.right = 6;
-    light.shadow.camera.bottom = light.shadow.camera.left = -6;
+    // 광원의 그림자 투영 활성화
+    light.castShadow = true;
     // 그림자 품질을 높이려면 쉐도우맵 해상도를 높이면 된다.
     light.shadow.mapSize.set(2048, 2048); // 기본값은 512x512
     // 그림자의 가장자리를 블러처리하는 용도: 기본값 1, 클수록 블러링된다.
     light.shadow.radius = 1;
 
-    const helper = new THREE.DirectionalLightHelper(light);
+    const helper = new THREE.SpotLightHelper(light);
     this.scene.add(helper);
 
     const lightCameraHelper = new THREE.CameraHelper(light.shadow.camera);
@@ -176,11 +207,23 @@ class App {
     if (smallSpherePivot != null) {
       smallSpherePivot.rotation.y = THREE.MathUtils.degToRad(seconds * 50);
 
+      const smallSphere = smallSpherePivot.children[0];
       if (this.light instanceof DirectionalLight) {
-        const smallSphere = smallSpherePivot.children[0];
         smallSphere.getWorldPosition(this.light.target.position); // 작은 구의 월드좌표를 광원의 타겟으로 변경
 
         if (this.lightHelper instanceof DirectionalLightHelper) {
+          this.lightHelper.update();
+        }
+      }
+      if (this.light instanceof PointLight) {
+        smallSphere.getWorldPosition(this.light.position);
+        if (this.lightHelper instanceof PointLightHelper) {
+          this.lightHelper.update();
+        }
+      }
+      if (this.light instanceof SpotLight) {
+        smallSphere.getWorldPosition(this.light.target.position);
+        if (this.lightHelper instanceof SpotLightHelper) {
           this.lightHelper.update();
         }
       }
