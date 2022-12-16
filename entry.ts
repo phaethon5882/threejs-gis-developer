@@ -1,6 +1,6 @@
-import fg from 'fast-glob';
-import path from 'path';
 import { readFile, writeFile } from 'fs/promises';
+import path from 'path';
+import fg from 'fast-glob';
 
 const sourceDir = path.join(__dirname, 'src');
 const pkgJsonDir = path.join(__dirname, 'package.json');
