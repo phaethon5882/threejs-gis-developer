@@ -1,9 +1,9 @@
+import type { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import * as THREE from 'three';
-import { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import fontJson from 'three/examples/fonts/helvetiker_regular.typeface.json';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 
 class App {
   private readonly container: HTMLDivElement;

@@ -1,5 +1,5 @@
+import type { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import * as THREE from 'three';
-import { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 class App {

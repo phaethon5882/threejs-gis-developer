@@ -1,5 +1,5 @@
+import type { Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import * as THREE from 'three';
-import { Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 type ModelName = 'solarSystem' | 'earthOrbit' | 'moonOrbit';

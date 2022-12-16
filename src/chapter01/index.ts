@@ -1,5 +1,5 @@
+import type { Mesh, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import * as THREE from 'three';
-import { Mesh, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 
 class App {
   private readonly container: HTMLDivElement;

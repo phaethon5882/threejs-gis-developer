@@ -1,8 +1,6 @@
+import type { PerspectiveCamera, Scene, WebGLRenderer, Material } from 'three';
 import * as THREE from 'three';
-import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { Material } from 'three/src/materials/Material';
-import { MirroredRepeatWrapping, RepeatWrapping } from 'three/src/constants';
 
 class App {
   private readonly container: HTMLDivElement;
