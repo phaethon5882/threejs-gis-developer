@@ -1,5 +1,5 @@
+import type { CubeTexture, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import * as THREE from 'three';
-import type { AnimationMixer, Clock, PerspectiveCamera, Scene, Texture, WebGLRenderer, CubeTexture } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { debounce } from 'lodash-es';
 
@@ -8,8 +8,6 @@ class App {
   private readonly renderer: WebGLRenderer;
   private readonly scene: Scene;
   private readonly camera: PerspectiveCamera;
-  private readonly animeMixer?: AnimationMixer;
-  private readonly clock?: Clock;
   private readonly controls: OrbitControls;
 
   private constructor(container: HTMLDivElement) {
@@ -31,16 +29,37 @@ class App {
 
   public static init = async (container: HTMLDivElement): Promise<App> => {
     const app = new App(container);
-    const { setupCubeMap, setupModels } = app;
-    const cubeTexture = await setupCubeMap();
-    setupModels(cubeTexture);
+    const { setupBackgroundWithCubeMap, setupModels } = app;
+    await setupBackgroundWithCubeMap();
+    setupModels();
 
     return app;
   };
 
-  private readonly setupModels = (cubeTexture: CubeTexture) => {
+  /**
+   * cubeMap: 정육면체에 텍스처를 맵핑해서 다이나믹한 반사를 표현할 수 있음
+   */
+  private readonly setupBackgroundWithCubeMap = async (): Promise<void> => {
+    const loader = new THREE.CubeTextureLoader();
+    this.scene.background = await new Promise<CubeTexture>((resolve) => {
+      loader.load(
+        [
+          '/static/cubemaps/Citadella2/posx.jpg',
+          '/static/cubemaps/Citadella2/negx.jpg',
+          '/static/cubemaps/Citadella2/posy.jpg',
+          '/static/cubemaps/Citadella2/negy.jpg',
+          '/static/cubemaps/Citadella2/posz.jpg',
+          '/static/cubemaps/Citadella2/negz.jpg',
+        ],
+        resolve,
+      );
+    });
+  };
+
+  private readonly setupModels = () => {
     const pmremG = new THREE.PMREMGenerator(this.renderer);
-    const cubeMap = pmremG.fromCubemap(cubeTexture).texture;
+    const renderTarget = pmremG.fromCubemap(this.scene.background as CubeTexture);
+    const cubeMap = renderTarget.texture;
 
     const geometry = new THREE.SphereGeometry();
     const material01 = new THREE.MeshStandardMaterial({
@@ -71,38 +90,6 @@ class App {
         }
       }
     }
-  };
-
-  /**
-   * cubeMap: 정육면체에 텍스처를 맵핑해서 다이나믹한 반사를 표현할 수 있음
-   */
-  private readonly setupCubeMap = async (): Promise<CubeTexture> => {
-    const loader = new THREE.CubeTextureLoader();
-    const cubeTexture = await new Promise<CubeTexture>((resolve) => {
-      loader.load(
-        [
-          '/static/cubemaps/Citadella2/posx.jpg',
-          '/static/cubemaps/Citadella2/negx.jpg',
-          '/static/cubemaps/Citadella2/posy.jpg',
-          '/static/cubemaps/Citadella2/negy.jpg',
-          '/static/cubemaps/Citadella2/posz.jpg',
-          '/static/cubemaps/Citadella2/negz.jpg',
-        ],
-        resolve,
-      );
-    });
-    this.scene.background = cubeTexture;
-    return cubeTexture;
-  };
-
-  /**
-   * PMREM = Prefiltered, Mipmapped Radiance Environment Map
-   * Equirectangular = 등장방형도법
-   */
-  private readonly setupEquirectangularMap = () => {
-    const backgroundTexture = this.scene.background as Texture;
-    const pmremGen = new THREE.PMREMGenerator(this.renderer);
-    return pmremGen.fromEquirectangular(backgroundTexture).texture;
   };
 
   private readonly setupControls = (): OrbitControls => {
@@ -147,10 +134,6 @@ class App {
 
   private readonly update = (time: DOMHighResTimeStamp): void => {
     // const seconds = time * 0.001;
-    if (this.animeMixer && this.clock) {
-      const delta = this.clock.getDelta(); // 다음 getDelta() 를 호출할 때까지 몇초가 걸렸는지 알려줌 (0.01~~)
-      this.animeMixer.update(delta); // delta 값을 넘겨주면 그 만큼 키프레임을 이동시키는 것 같음
-    }
   };
 }
 
