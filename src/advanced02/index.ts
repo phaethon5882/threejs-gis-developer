@@ -3,6 +3,7 @@ import type { PerspectiveCamera, Scene, WebGLRenderer, Object3D } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { debounce } from 'lodash-es';
 
 class App {
   private readonly container: HTMLDivElement;
@@ -22,7 +23,7 @@ class App {
     this.controls = this.setupControls();
     this.setupLight();
 
-    window.onresize = this.resize;
+    window.onresize = debounce(this.resize, 200);
     this.resize();
 
     requestAnimationFrame(this.render);
