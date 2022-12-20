@@ -1,6 +1,6 @@
+import type { AnimationMixer, Group, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import * as THREE from 'three';
 import { Clock } from 'three';
-import type { Group, Object3D, PerspectiveCamera, Scene, WebGLRenderer, AnimationMixer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { debounce } from 'lodash-es';
@@ -62,27 +62,22 @@ class App {
     camera: PerspectiveCamera,
     controls: OrbitControls,
     viewMode: 'x' | 'y' | 'z',
-    bFront = true,
+    bFront = true, // viewMode 축의 앞면을 보여줄지 뒷몇을 보여줄지
   ) => {
-    // 모델의 경계박스
-    // const boundingSphere = new THREE.Boun
     const boundingBox = new THREE.Box3().setFromObject(object);
     const boxCenter = boundingBox.getCenter(new THREE.Vector3());
     const boxSize = boundingBox.getSize(new THREE.Vector3());
 
-    // 수동조절
-    const offset = new THREE.Vector3(viewMode === 'x' ? 1 : 0, viewMode === 'y' ? 1 : 0, viewMode === 'z' ? 1 : 0);
+    const direction = new THREE.Vector3(viewMode === 'x' ? 1 : 0, viewMode === 'y' ? 1 : 0, viewMode === 'z' ? 1 : 0);
     if (!bFront) {
-      offset[viewMode] *= -1;
+      direction[viewMode] *= -1;
     }
-
-    camera.position.set(boxCenter.x + offset.x, boxCenter.y + offset.y, boxCenter.z + offset.z);
+    // 카메라를 물체 중심에서 우리가 정한 방향벡터쪽으로 1만큼 이동
+    camera.position.set(boxCenter.x + direction.x, boxCenter.y + direction.y, boxCenter.z + direction.z);
 
     // 이상적인 카메라 위치 구하기
     const halfFov = THREE.MathUtils.degToRad(camera.fov * 0.5);
-    const boxRadius = boxSize.length() / 2;
-    const distance = boxRadius / Math.tan(halfFov);
-    const direction = new THREE.Vector3().subVectors(camera.position, boxCenter).normalize();
+    const distance = (boxSize.length() * 0.5) / Math.tan(halfFov);
     const position = new THREE.Vector3().copy(direction).multiplyScalar(distance).add(boxCenter);
     camera.position.copy(position);
     camera.updateProjectionMatrix();
@@ -102,7 +97,6 @@ class App {
       0.1,
       100
     );
-    camera.position.z = 4;
     this.scene.add(camera);
 
     return camera;
