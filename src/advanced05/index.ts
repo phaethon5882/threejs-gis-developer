@@ -1,6 +1,8 @@
-import type { PerspectiveCamera, Scene, WebGLRenderer, WebGLRenderTargetOptions } from 'three';
+import type { PerspectiveCamera, Scene, WebGLRenderer, PMREMGenerator } from 'three';
+import { CubeCamera, Mesh } from 'three';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry';
 import { debounce } from 'lodash-es';
 
 class App {
@@ -45,69 +47,44 @@ class App {
   };
 
   private readonly setupModels = () => {
-    const renderTargetOptions: WebGLRenderTargetOptions = {
+    const teapotRenderTarget = new THREE.WebGLCubeRenderTarget(128, {
       format: THREE.RGBAFormat,
       generateMipmaps: true,
       minFilter: THREE.LinearMipMapLinearFilter,
-    };
-
-    const sphereRenderTarget = new THREE.WebGLCubeRenderTarget(256, renderTargetOptions);
-    const sphereCamera = new THREE.CubeCamera(0.1, 1000, sphereRenderTarget);
-    const sphereGeometry = new THREE.SphereGeometry(1.5);
-    const sphereMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
-      envMap: sphereRenderTarget.texture,
-      reflectivity: 0.95,
     });
-    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    const spherePivot = new THREE.Object3D();
-    spherePivot.add(sphere).add(sphereCamera);
-    spherePivot.position.set(1, 0, 1);
-    this.scene.add(spherePivot);
+    // @ts-expect-error
+    teapotRenderTarget._pmremG = new THREE.PMREMGenerator(this.renderer);
 
-    const cylinderRenderTarget = new THREE.WebGLCubeRenderTarget(256, renderTargetOptions);
-    const cylinderCamera = new THREE.CubeCamera(0.1, 1000, cylinderRenderTarget);
-    const cylinderGeometry = new THREE.CylinderGeometry(0.5, 1, 3, 32);
-    const cylinderMaterial = new THREE.MeshPhongMaterial({
+    const teapotCamera = new THREE.CubeCamera(0.01, 10, teapotRenderTarget);
+    const teapotGeometry = new TeapotGeometry(0.7, 24);
+    const teapotMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
-      envMap: cylinderRenderTarget.texture,
-      reflectivity: 0.95,
+      metalness: 0.1,
+      roughness: 0.05,
+      ior: 2.5, // 굴절률 1이 진공, 2.419가 다이아몬드, 1.4~1.7이 유리매질이라고 함
+      // @ts-expect-error
+      thickness: 0.2, // 유리의 두께
+      transmission: 1, // 광학적 투명도
+      side: THREE.DoubleSide,
+      envMap: teapotRenderTarget.texture,
+      envMapIntensity: 1,
     });
-    const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+    const teapot = new THREE.Mesh(teapotGeometry, teapotMaterial);
+    teapot.add(teapotCamera);
+    teapot.name = 'teapot';
+    this.scene.add(teapot);
+
+    const cylinderGeometry = new THREE.CylinderGeometry(0.1, 0.2, 1.5, 32);
+    const cylinderMaterial = new THREE.MeshNormalMaterial();
     const cylinderPivot = new THREE.Object3D();
-    cylinderPivot.add(cylinder).add(cylinderCamera);
-    cylinderPivot.position.set(-1, 0, -1);
+    cylinderPivot.name = 'cylinderPivot';
+    for (let degree = 0; degree <= 360; degree += 30) {
+      const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+      const radian = THREE.MathUtils.degToRad(degree);
+      cylinder.position.set(2 * Math.sin(radian), 0, 2 * Math.cos(radian));
+      cylinderPivot.add(cylinder);
+    }
     this.scene.add(cylinderPivot);
-
-    const torusRenderTarget = new THREE.WebGLCubeRenderTarget(256, renderTargetOptions);
-    const torusCamera = new THREE.CubeCamera(0.1, 1000, torusRenderTarget);
-    const torusGeometry = new THREE.TorusGeometry(4, 0.5, 24, 64);
-    const torusMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
-      envMap: torusRenderTarget.texture,
-      reflectivity: 0.95,
-    });
-    const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-    const torusPivot = new THREE.Object3D();
-    torusPivot.add(torus).add(torusCamera);
-    torus.name = 'torus';
-    torus.rotation.x = Math.PI / 2;
-    this.scene.add(torusPivot);
-
-    const planeRenderTarget = new THREE.WebGLCubeRenderTarget(2048, renderTargetOptions);
-    const planeCamera = new THREE.CubeCamera(0.1, 1000, planeRenderTarget);
-    const planeGeometry = new THREE.PlaneGeometry(12, 12);
-    const planeMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
-      envMap: planeRenderTarget.texture,
-      reflectivity: 0.95,
-    });
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    const planePivot = new THREE.Object3D();
-    planePivot.add(plane).add(planeCamera);
-    planePivot.position.y = -4.8;
-    plane.rotation.x = -Math.PI / 2;
-    this.scene.add(planePivot);
   };
 
   private readonly setupControls = (): OrbitControls => {
@@ -122,7 +99,7 @@ class App {
       0.1,
       1000
     );
-    camera.position.set(0, 4, 9);
+    camera.position.set(0, 4, 5);
     this.scene.add(camera);
 
     return camera;
@@ -164,7 +141,26 @@ class App {
   };
 
   private readonly update = (time: DOMHighResTimeStamp): void => {
-    // const seconds = time * 0.001;
+    const seconds = time * 0.001;
+
+    const teapot = this.scene.getObjectByName('teapot');
+    const cylinderPivot = this.scene.getObjectByName('cylinderPivot');
+    if (cylinderPivot) {
+      cylinderPivot.rotation.y = Math.sin(seconds * 0.5);
+    }
+    if (teapot instanceof Mesh) {
+      const teapotCamera = teapot.children[0];
+      if (teapotCamera instanceof CubeCamera) {
+        teapotCamera.update(this.renderer, this.scene);
+        teapot.visible = false;
+        // @ts-expect-error
+        const pmremGenerator = teapotCamera.renderTarget._pmremG as PMREMGenerator;
+        const renderTarget = pmremGenerator.fromCubemap(teapotCamera.renderTarget.texture);
+        teapot.material.envMap = renderTarget.texture;
+        teapot.material.needsUpdate = true;
+        teapot.visible = true;
+      }
+    }
   };
 }
 
