@@ -51,7 +51,7 @@ class App {
       minFilter: THREE.LinearMipMapLinearFilter,
     };
 
-    const sphereRenderTarget = new THREE.WebGLCubeRenderTarget(512, renderTargetOptions);
+    const sphereRenderTarget = new THREE.WebGLCubeRenderTarget(256, renderTargetOptions);
     const sphereCamera = new THREE.CubeCamera(0.1, 1000, sphereRenderTarget);
     const sphereGeometry = new THREE.SphereGeometry(1.5);
     const sphereMaterial = new THREE.MeshPhongMaterial({
@@ -65,7 +65,7 @@ class App {
     spherePivot.position.set(1, 0, 1);
     this.scene.add(spherePivot);
 
-    const cylinderRenderTarget = new THREE.WebGLCubeRenderTarget(2048, renderTargetOptions);
+    const cylinderRenderTarget = new THREE.WebGLCubeRenderTarget(256, renderTargetOptions);
     const cylinderCamera = new THREE.CubeCamera(0.1, 1000, cylinderRenderTarget);
     const cylinderGeometry = new THREE.CylinderGeometry(0.5, 1, 3, 32);
     const cylinderMaterial = new THREE.MeshPhongMaterial({
@@ -79,7 +79,7 @@ class App {
     cylinderPivot.position.set(-1, 0, -1);
     this.scene.add(cylinderPivot);
 
-    const torusRenderTarget = new THREE.WebGLCubeRenderTarget(2048, renderTargetOptions);
+    const torusRenderTarget = new THREE.WebGLCubeRenderTarget(256, renderTargetOptions);
     const torusCamera = new THREE.CubeCamera(0.1, 1000, torusRenderTarget);
     const torusGeometry = new THREE.TorusGeometry(4, 0.5, 24, 64);
     const torusMaterial = new THREE.MeshPhongMaterial({
