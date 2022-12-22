@@ -32,24 +32,25 @@
     "three": "^0.147.0"
   },
   "source": [
-    "./src/advanced02/index.html",
-    "./src/advanced01/index.html",
     "./src/advanced03/index.html",
     "./src/chapter01/index.html",
     "./src/chapter02/index.html",
     "./src/chapter04/index.html",
-    "./src/chapter06/index.html",
-    "./src/chapter07/index.html",
+    "./src/advanced02/index.html",
+    "./src/advanced01/index.html",
     "./src/chapter08/index.html",
-    "./src/chapter09/index.html",
+    "./src/chapter06/index.html",
     "./src/advanced04/cubemap/index.html",
+    "./src/advanced04/dynamic-envmap/index.html",
     "./src/advanced04/envmap/index.html",
+    "./src/chapter07/index.html",
     "./src/advanced04/hdri/index.html",
+    "./src/chapter09/index.html",
     "./src/chapter03/part1/index.html",
     "./src/chapter03/part3/index.html",
-    "./src/chapter05/part1/index.html",
     "./src/chapter05/part2/index.html",
-    "./src/chapter05/part3/index.html",
-    "./src/chapter05/part4/index.html"
+    "./src/chapter05/part1/index.html",
+    "./src/chapter05/part4/index.html",
+    "./src/chapter05/part3/index.html"
   ]
 }
