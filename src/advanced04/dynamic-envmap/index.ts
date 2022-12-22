@@ -1,4 +1,4 @@
-import type { CubeTexture, PerspectiveCamera, Scene, Texture, WebGLRenderer, WebGLRenderTargetOptions } from 'three';
+import type { PerspectiveCamera, Scene, WebGLRenderer, WebGLRenderTargetOptions } from 'three';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { debounce } from 'lodash-es';
