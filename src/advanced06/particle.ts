@@ -39,7 +39,7 @@ export class Particle<
         this.reset();
       }
 
-      // 12초 동안 12번 회전시키겠다.
+      // 6초 동안 360도 회전시키겠다.
       this.mesh.rotation.x = THREE.MathUtils.lerp(0, 2 * Math.PI * duration, elapsedTime / duration);
 
       let hs = 0;
@@ -65,6 +65,7 @@ export class Particle<
     if (this.mesh.material instanceof MeshStandardMaterial) {
       this.mesh.material.color.setHSL(0, 0, 0.1);
     }
+    // 원래 좌표랑 각도로 돌아가란 말이다!
     const { position, rotation } = this.origin;
     this.mesh.position.set(position.x, position.y, position.z);
     this.mesh.rotation.set(rotation.x, rotation.y, rotation.z);
