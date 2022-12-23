@@ -1,6 +1,5 @@
 import type { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import * as THREE from 'three';
-import { Mesh, Vector2 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { debounce } from 'lodash-es';
 import { Particle, ParticleMesh } from './particle';
